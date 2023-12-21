@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 //import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 //import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 //import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -15,6 +16,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
+import org.checkerframework.checker.units.qual.min;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
@@ -35,9 +37,14 @@ class CRobot {
 
     public DcMotor leftSliderMotor; //invers acelor de ceasornic
     public DcMotor rightSliderMotor;
-    public Servo clawServo;
+    //public Servo clawServo;
+    //public Servo hingeServo;
+    public CRServo tinderServo;
 
-    public Servo chainServo;
+    public Servo leftServo;
+    public Servo rightServo;
+
+    //public Servo chainServo;
     public DcMotor chainMotor;
 
     public void init(Telemetry telemetry, HardwareMap hardwareMap) {
@@ -49,10 +56,16 @@ class CRobot {
 
         rightSliderMotor = hardwareMap.get(DcMotor.class, "rightSliderMotor");
         leftSliderMotor = hardwareMap.get(DcMotor.class, "leftSliderMotor");
-        clawServo = hardwareMap.get(Servo.class, "clawServo");
+        //clawServo = hardwareMap.get(Servo.class, "clawServo");
+        //hingeServo = hardwareMap.get(Servo.class, "hingeServo");
+        tinderServo = hardwareMap.get(CRServo.class, "tinderServo");
+
+        leftServo = hardwareMap.get(Servo.class, "leftServo");
+        rightServo = hardwareMap.get(Servo.class, "rightServo");
 
         chainMotor = hardwareMap.get(DcMotor.class, "chainMotor");
-        chainServo = hardwareMap.get(Servo.class, "chainServo");
+
+        // chainServo = hardwareMap.get(Servo.class, "chainServo");
 
         leftSliderMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -60,6 +73,9 @@ class CRobot {
         rightRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         leftRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+       // leftServo.setDirection(Servo.Direction.REVERSE);
+        //rightServo.setDirection(Servo.Direction.REVERSE);
         telemetry.update();
     }
 
@@ -71,6 +87,7 @@ class CRobot {
         else chainMotor.setPower(0);
     }
 
+    /*
     public double chainPos = 0, chK = 0.1;
     public void chainS(){chainServo.setPosition(chainPos);}
 
@@ -83,30 +100,93 @@ class CRobot {
         if (chainPos > 0) chainPos -= chK;
         chainS();
     }
+    */
+    public void limitUp() {
+        uL += 100;
+    }
 
-    public int sliderPos,uL,dL,sliderSpeed;
+    public void limitDown() {
+        dL -= 100;
+    }
 
-    public void sliderS(){
+    public int sliderPos, uL = 4000, dL = 0, sliderSpeed = 10;
+
+    public void sliderS() {
         leftSliderMotor.setTargetPosition(sliderPos);
         rightSliderMotor.setTargetPosition(sliderPos);
     }
+
     public void sliderUp() {
-        if(sliderPos<uL)sliderPos+=sliderSpeed;
+        if (sliderPos < uL) sliderPos += sliderSpeed;
         sliderS();
     }
 
     public void sliderDown() {
-        if(sliderPos>dL)sliderPos-=sliderSpeed;
+        if (sliderPos > dL) sliderPos -= sliderSpeed;
         sliderS();
     }
 
     public boolean clawPow;
+
+    /*
     public void claw() {
         clawPow = !clawPow;
-        if (clawPow) clawServo.setPosition(1);
-        else chainMotor.setPower(0);
+        if (clawPow) clawServo.setPosition(0.5);
+        else clawServo.setPosition(0.57);
+    }
+    */
+    public boolean tinderPow;
+
+   // public void tinder() {
+      //  tinderPow = !tinderPow;
+      //  if (tinderPow) tinderServo.setPosition(1);
+       // else tinderServo.setPosition(0);
+   // }
+   public void tinder() {
+       tinderPow = !tinderPow;
+       if (tinderPow) tinderServo.setPower(0);
+       else tinderServo.setPower(1);
+   }
+    /*
+    public void clawCustom(float pos) {
+        clawServo.setPosition(pos);
     }
 
+    public void hingeCustom(float pos) {
+        hingeServo.setPosition(pos);
+    }
+    */
+    public void tinderCustom(float pos) {
+        tinderServo.setPower(pos);
+    }
+
+    public void servoCustom(float pos) {
+        rightServo.setPosition(1-pos);
+        leftServo.setPosition(pos);
+    }
+
+    public boolean servoPow;
+    public void servoS() {
+        servoPow = !servoPow;
+        if (servoPow){ leftServo.setPosition(1);rightServo.setPosition(0);}
+        else {leftServo.setPosition(0);rightServo.setPosition(1);}
+    }
+    public boolean hingePow;
+    /*
+    public void hinge() {
+        hingePow = !hingePow;
+        if (hingePow) hingeServo.setPosition(1);
+        else hingeServo.setPosition(0);
+    }
+
+    public void failSafe()
+    {
+        if(sliderPos <1200) {
+            clawPow = false;
+            clawServo.setPosition(0.57);
+        }
+    }
+    */
     public void log(Telemetry telemetry) {
 
     }
@@ -116,18 +196,18 @@ class CRobot {
 
 public class test extends OpMode {
     public ElapsedTime runtime = new ElapsedTime();
-    public double leftStickForward = 0;
-    public double leftStickSide = 0;
-    public double botSpin = 0;
-    public double denominator = 0;
-    public double frontLeftPower = 0;
-    public double frontRightPower = 0;
-    public double rearLeftPower = 0;
-    public double rearRightPower = 0;
-    public boolean speedLimit=false;
-    boolean pressX = false, pressA = false,pressB = false, pressY = false, pressLbumper = false, pressRbumper = false, pressDpDown = false, pressDpUp = false, pressDpLeft = false, pressBumperG1 = false;
+    double leftStickForward = 0;
+    double leftStickSide = 0;
+    double botSpin = 0;
+    double denominator = 0;
+    double frontLeftPower = 0;
+    double frontRightPower = 0;
+    double rearLeftPower = 0;
+    double rearRightPower = 0;
+    boolean speedLimit = false;
+    boolean pressX = false, pressA = false, pressB = false, pressY = false, pressLbumper2 = false, pressLbumper = false, pressRbumper = false, pressDpDown = false, pressDpUp = false, pressDpLeft = false, pressBumperG1 = false;
+    double sk=20;
     CRobot robot = new CRobot();
-    public double gear;
 
     public void init() {
         robot.init(telemetry, hardwareMap);
@@ -136,11 +216,14 @@ public class test extends OpMode {
 
         robot.rightSliderMotor.setTargetPosition(0);
         robot.rightSliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftSliderMotor.setPower(1);
+        robot.rightSliderMotor.setPower(1);
 
-        robot.clawServo.setPosition(0);
-        robot.chainServo.setPosition(0);
-
-
+        robot.leftServo.setPosition(0);
+        robot.rightServo.setPosition(1);
+        //robot.clawServo.setPosition(0.57);
+        // robot.chainServo.setPosition(0);
+        //robot.hingeServo.setPosition(0);
     }
 
     @Override
@@ -158,12 +241,18 @@ public class test extends OpMode {
 
         leftStickForward = -this.gamepad2.left_stick_y;
         leftStickSide = this.gamepad2.left_stick_x;
-        botSpin = this.gamepad2.right_stick_x;
+        botSpin = -this.gamepad2.right_stick_x;
+        //speed toggle
         if (speedLimit) {
             leftStickForward = .25 * -this.gamepad2.left_stick_y;
             leftStickSide = .25 * this.gamepad2.left_stick_x;
             botSpin = .25 * this.gamepad2.right_stick_x;
         }
+        if (gamepad2.left_bumper && pressLbumper2) {
+            speedLimit = !speedLimit;
+            pressLbumper2 = false;
+        }
+        if (!gamepad2.left_bumper) pressLbumper2 = true;
         //movement
         denominator = Math.max(Math.abs(leftStickForward) + Math.abs(leftStickSide) + Math.abs(botSpin), 1);
         frontLeftPower = (leftStickForward + leftStickSide + botSpin) / denominator;
@@ -177,9 +266,8 @@ public class test extends OpMode {
         robot.rightFrontMotor.setPower(frontRightPower);
         robot.leftRearMotor.setPower(rearLeftPower);
         // control
-
-        //lift override (teleop)
         //chain position
+        /*
         if (this.gamepad1.y && pressY == true) {
             pressY = false;
             robot.chainUp();
@@ -191,27 +279,69 @@ public class test extends OpMode {
             robot.chainDown();
         }
         if (!this.gamepad1.a) pressA = true;
+        */
+        //robot.clawCustom(this.gamepad1.left_stick_y);
+        // robot.hingeCustom(this.gamepad1.right_stick_y);
+        //robot.tinderCustom(this.gamepad1.right_stick_y);
 
-        if (this.gamepad1.b && pressB) {
+        //robot.servoCustom(this.gamepad1.right_stick_x);
+
+        if (this.gamepad1.y && pressY) {
             robot.chainPower();
+            pressY = false;
+        }
+        if (!this.gamepad1.y) pressY = true;
+
+        //if (this.gamepad1.right_trigger > 0) {robot.sliderUp();}
+        //if (this.gamepad1.left_trigger > 0 ) {robot.sliderDown();}
+        robot.sliderPos = Math.max(robot.dL, Math.min(robot.uL, (int)(robot.sliderPos - sk * gamepad1.left_stick_y)));
+        robot.sliderS();
+        if(this.gamepad1.a && pressA)
+        {
+            robot.sliderPos = 0;
+            robot.sliderS();
+            pressA=false;
+        }
+        if(!this.gamepad1.a)pressA=true;
+
+        if (this.gamepad1.dpad_up && pressDpUp) {
+            robot.limitUp();
+            pressDpUp = false;
+        }
+        if (!this.gamepad1.dpad_up) pressDpUp = true;
+
+        if (this.gamepad1.dpad_down && pressDpDown) {
+            robot.limitUp();
             pressDpDown = false;
         }
-        if (!this.gamepad1.b) pressB = true;
-
-        if (this.gamepad2.right_trigger > 0) {robot.sliderUp();}
-        if (this.gamepad2.left_trigger > 0 ) {robot.sliderDown();}
+        if (!this.gamepad1.dpad_down) pressDpDown = true;
 
         if (this.gamepad1.x && pressX == true) {
-            robot.claw();
+            robot.servoS();
             pressX = false;
         }
         if (!this.gamepad1.x) pressX = true;
+
+        if (this.gamepad1.b && pressB == true) {
+            robot.tinder();
+            pressB = false;
+        }
+        if (!this.gamepad1.b) pressB = true;
+
+        //robot.failSafe();
         //if (this.gamepad1.back) robot.resetSlider();
 
         // telemetrie
         robot.log(telemetry);
         telemetry.addData("Left Stick Y", leftStickForward);
         telemetry.addData("Left Stick X", leftStickSide);
+        // telemetry.addData("claw pos", robot.clawServo.getPosition());
+        //telemetry.addData("hinge pos", robot.hingeServo.getPosition());
+        telemetry.addData("slider target", robot.leftSliderMotor.getTargetPosition());
+        telemetry.addData("left", 1-robot.leftServo.getPosition());
+        telemetry.addData("right", robot.rightServo.getPosition());
+        //.addData("hinge", robot.hingeServo.getPosition());
+        telemetry.addData("chain", robot.chainMotor.getPower());
         robot.log(telemetry);
         telemetry.update();
     }
