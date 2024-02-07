@@ -21,7 +21,7 @@ public class LocalizationTest extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        boolean pressB = false;
         waitForStart();
 
         while (!isStopRequested()) {
@@ -32,6 +32,11 @@ public class LocalizationTest extends LinearOpMode {
                             -gamepad1.right_stick_x
                     )
             );
+            if (gamepad1.b && pressB == false) {
+                drive.turn(Math.toRadians(90));
+                pressB = true;
+            }
+            if (!gamepad1.b) pressB = false;
 
             drive.update();
 

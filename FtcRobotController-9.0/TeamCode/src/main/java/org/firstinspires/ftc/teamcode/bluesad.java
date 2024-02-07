@@ -4,6 +4,7 @@ import android.util.Size;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -23,7 +24,7 @@ import java.util.List;
 
 @Autonomous
 
-public class OUTtoni1000 extends LinearOpMode {
+public class bluesad extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -44,7 +45,6 @@ public class OUTtoni1000 extends LinearOpMode {
     private int camerax = 1280;
     private int cameray = 720;
     private int target = 0;
-
     CRobot robot = new CRobot();
 
     @Override
@@ -57,37 +57,27 @@ public class OUTtoni1000 extends LinearOpMode {
         //
         TrajectorySequence rightSpike = drive.trajectorySequenceBuilder(startPose)
                 .splineTo(new Vector2d( 6,35 ), Math.toRadians(-135))
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 200;
-                    robot.sliderS();
-                })
                 .build();
-        TrajectorySequence rightBack = drive.trajectorySequenceBuilder(rightSpike.end())
-                .back(7)
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 600;
-                    robot.sliderS();
-                })
+        Trajectory rightBack = drive.trajectoryBuilder(rightSpike.end(), true)
+                .splineTo(new Vector2d( 12,55 ), Math.toRadians(90))
                 .build();
         TrajectorySequence rightRepo = drive.trajectorySequenceBuilder(new Pose2d(new Vector2d(rightBack.end().getX(),rightBack.end().getY()),Math.toRadians(0)))
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 1000;
-                    robot.sliderS();
-                })
-                .forward(39)
-                .addDisplacementMarker(() -> {
-                    robot.servoS();
-                })
+                .forward(84)
                 .build();
         TrajectorySequence rightPark0 = drive.trajectorySequenceBuilder(rightRepo.end())
-                .strafeLeft(21)
-                .forward(1)
+                .addDisplacementMarker(() -> {
+                    robot.sliderPos = 1200;
+                    robot.sliderS();
+                    robot.servoS();
+                })
+                .strafeLeft(40)
+                .forward(4)
                 .build();
         TrajectorySequence rightPark1 = drive.trajectorySequenceBuilder(rightPark0.end())
                 .back(5)
                 .build();
         TrajectorySequence rightPark2 = drive.trajectorySequenceBuilder(rightPark1.end())
-                .strafeLeft(25)
+                .strafeLeft(23)
                 .build();
         TrajectorySequence rightPark3 = drive.trajectorySequenceBuilder(rightPark2.end())
                 .forward(16)
@@ -95,30 +85,23 @@ public class OUTtoni1000 extends LinearOpMode {
         //
         TrajectorySequence midSpike = drive.trajectorySequenceBuilder(startPose)
                 .forward(30)
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 200;
-                    robot.sliderS();
-                })
                 .build();
         TrajectorySequence midBack = drive.trajectorySequenceBuilder(midSpike.end())
-                .back(4)
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 600;
-                    robot.sliderS();
-                })
+                .back(25)
                 .build();
         TrajectorySequence midRepo = drive.trajectorySequenceBuilder(new Pose2d(new Vector2d(midBack.end().getX(),midBack.end().getY()),Math.toRadians(0)))
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 1000;
-                    robot.sliderS();
-                })
-                .forward(39)
+                .forward(84)
+                .build();
+        TrajectorySequence midPark = drive.trajectorySequenceBuilder(midRepo.end())
                 .addDisplacementMarker(() -> {
                     robot.servoS();
                 })
-                .build();
-        TrajectorySequence midPark = drive.trajectorySequenceBuilder(midRepo.end())
-                .strafeLeft(3)
+                .addDisplacementMarker(() -> {
+                    robot.sliderPos = 1200;
+                    robot.sliderS();
+                })
+                .strafeLeft(32)
+                .forward(4)
                 .build();
         TrajectorySequence midPark0 = drive.trajectorySequenceBuilder(midPark.end())
                 .back(5)
@@ -127,44 +110,37 @@ public class OUTtoni1000 extends LinearOpMode {
                 .strafeLeft(32)
                 .build();
         TrajectorySequence midPark2 = drive.trajectorySequenceBuilder(midPark1.end())
-                .forward(18)
+                .forward(15)
                 .build();
         //
         TrajectorySequence leftSpike = drive.trajectorySequenceBuilder(startPose)
                 .splineTo(new Vector2d( 18,35 ), Math.toRadians(-45))
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 200;
-                    robot.sliderS();
-                })
                 .build();
-        TrajectorySequence leftBack = drive.trajectorySequenceBuilder(leftSpike.end())
-                .back(7)
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 600;
-                    robot.sliderS();
-                })
+        Trajectory leftBack = drive.trajectoryBuilder(leftSpike.end(), true)
+                .splineTo(new Vector2d( 12,55 ), Math.toRadians(90))
                 .build();
         TrajectorySequence leftRepo = drive.trajectorySequenceBuilder( new Pose2d(new Vector2d(leftBack.end().getX(),leftBack.end().getY()),Math.toRadians(0)))
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 1000;
-                    robot.sliderS();
-                })
-                .forward(39)
+                .forward(84)
+                .build();
+        TrajectorySequence leftPark0 = drive.trajectorySequenceBuilder(leftRepo.end())
                 .addDisplacementMarker(() -> {
                     robot.servoS();
                 })
-                .build();
-        TrajectorySequence leftPark0 = drive.trajectorySequenceBuilder(leftRepo.end())
-                .strafeLeft(1)
+                .strafeLeft(23)
+                .addDisplacementMarker(() -> {
+                    robot.sliderPos = 1200;
+                    robot.sliderS();
+                })
+                .forward(4)
                 .build();
         TrajectorySequence leftPark1 = drive.trajectorySequenceBuilder(leftPark0.end())
-                .back(12)
+                .back(5)
                 .build();
         TrajectorySequence leftPark2 = drive.trajectorySequenceBuilder(leftPark1.end())
-                .strafeLeft(37)
+                .strafeLeft(42)
                 .build();
         TrajectorySequence lPark = drive.trajectorySequenceBuilder(leftPark2.end())
-                .forward(20)
+                .forward(15)
                 .build();
         //final destination
         initTfod();
@@ -179,10 +155,8 @@ public class OUTtoni1000 extends LinearOpMode {
         }
         waitForStart();
         visionPortal.close();
-        robot.leftSliderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftSliderMotor.setTargetPosition(0);
         robot.leftSliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rightSliderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rightSliderMotor.setTargetPosition(0);
         robot.rightSliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.leftSliderMotor.setPower(1);
@@ -193,14 +167,15 @@ public class OUTtoni1000 extends LinearOpMode {
                 // traiectorie pt stanga spike back repo park
                 robot.clawServo.setPosition(0);
                 drive.followTrajectorySequence(leftSpike);
-                drive.followTrajectorySequence(leftBack);
-                drive.turn(Math.toRadians(45));
+                drive.followTrajectory(leftBack);
+                sleep(5000);
+                drive.turn(Math.toRadians(90));
                 //
                 drive.followTrajectorySequence(leftRepo);
                 drive.followTrajectorySequence(leftPark0);
-                sleep(1000);
+                sleep(3000);
                 robot.clawServo.setPosition(0.25);
-                sleep(1000);
+                sleep(3000);
                 robot.sliderPos = 0;
                 robot.sliderS();
                 robot.servoS();
@@ -214,14 +189,15 @@ public class OUTtoni1000 extends LinearOpMode {
                 // traiectorie pt dreapta
                 robot.clawServo.setPosition(0);
                 drive.followTrajectorySequence(rightSpike);
-                drive.followTrajectorySequence(rightBack);
-                drive.turn(Math.toRadians(135));
+                drive.followTrajectory(rightBack);
+                sleep(5000);
+                drive.turn(Math.toRadians(90));
                 //
                 drive.followTrajectorySequence(rightRepo);
                 drive.followTrajectorySequence(rightPark0);
-                sleep(1000);
+                sleep(3000);
                 robot.clawServo.setPosition(0.25);
-                sleep(1000);
+                sleep(3000);
                 robot.sliderPos = 0;
                 robot.sliderS();
                 robot.servoS();
@@ -234,13 +210,14 @@ public class OUTtoni1000 extends LinearOpMode {
                 robot.clawServo.setPosition(0);
                 drive.followTrajectorySequence(midSpike);
                 drive.followTrajectorySequence(midBack);
+                sleep(5000);
                 drive.turn(Math.toRadians(90));
                 //
                 drive.followTrajectorySequence(midRepo);
                 drive.followTrajectorySequence(midPark);
-                sleep(1000);
+                sleep(3000);
                 robot.clawServo.setPosition(0.25);
-                sleep(1000);
+                sleep(3000);
                 robot.sliderPos = 0;
                 robot.sliderS();
                 robot.servoS();
@@ -254,7 +231,7 @@ public class OUTtoni1000 extends LinearOpMode {
      */
     private void initTfod() {
 
-        // Create the TensorFlow processor by usin a builder.
+        // Create the TensorFlow processor by using a builder.
         tfod = new TfodProcessor.Builder()
                 //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
                 //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
@@ -265,6 +242,7 @@ public class OUTtoni1000 extends LinearOpMode {
                 //.setIsModelQuantized(true)
                 //.setModelInputSize(300)
                 //.setModelAspectRatio(16.0 / 9.0)
+
                 .build();
 
         VisionPortal.Builder builder = new VisionPortal.Builder();
@@ -285,7 +263,7 @@ public class OUTtoni1000 extends LinearOpMode {
         builder.setAutoStopLiveView(false);
         builder.addProcessor(tfod);
         visionPortal = builder.build();
-        tfod.setMinResultConfidence(0.6f);
+        tfod.setMinResultConfidence(0.75f);
         visionPortal.setProcessorEnabled(tfod, true);
 
     }   // end method initTfod()

@@ -23,7 +23,7 @@ import java.util.List;
 
 @Autonomous
 
-public class OUTtoni1000 extends LinearOpMode {
+public class LucretiaBlue extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -49,124 +49,98 @@ public class OUTtoni1000 extends LinearOpMode {
 
     @Override
 
-    public void runOpMode() throws InterruptedException{
+    public void runOpMode() throws InterruptedException {
         robot.init(telemetry, hardwareMap);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(12, 60, Math.toRadians(-90));
+        Pose2d startPose = new Pose2d(12, 65, Math.toRadians(-90));
         drive.setPoseEstimate(startPose);
-        //
-        TrajectorySequence rightSpike = drive.trajectorySequenceBuilder(startPose)
-                .splineTo(new Vector2d( 6,35 ), Math.toRadians(-135))
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 200;
-                    robot.sliderS();
-                })
-                .build();
-        TrajectorySequence rightBack = drive.trajectorySequenceBuilder(rightSpike.end())
-                .back(7)
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 600;
-                    robot.sliderS();
-                })
-                .build();
-        TrajectorySequence rightRepo = drive.trajectorySequenceBuilder(new Pose2d(new Vector2d(rightBack.end().getX(),rightBack.end().getY()),Math.toRadians(0)))
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 1000;
-                    robot.sliderS();
-                })
-                .forward(39)
-                .addDisplacementMarker(() -> {
-                    robot.servoS();
-                })
-                .build();
-        TrajectorySequence rightPark0 = drive.trajectorySequenceBuilder(rightRepo.end())
-                .strafeLeft(21)
-                .forward(1)
-                .build();
-        TrajectorySequence rightPark1 = drive.trajectorySequenceBuilder(rightPark0.end())
-                .back(5)
-                .build();
-        TrajectorySequence rightPark2 = drive.trajectorySequenceBuilder(rightPark1.end())
-                .strafeLeft(25)
-                .build();
-        TrajectorySequence rightPark3 = drive.trajectorySequenceBuilder(rightPark2.end())
-                .forward(16)
-                .build();
-        //
-        TrajectorySequence midSpike = drive.trajectorySequenceBuilder(startPose)
+        //mid
+        TrajectorySequence midpart1 = drive.trajectorySequenceBuilder(new Pose2d(12, 65, Math.toRadians(-90)))
                 .forward(30)
+                .back(10)
+                .turn(Math.toRadians(90))
+                .forward(1)
                 .addDisplacementMarker(() -> {
-                    robot.sliderPos = 200;
+                    robot.sliderPos = 0;
                     robot.sliderS();
-                })
-                .build();
-        TrajectorySequence midBack = drive.trajectorySequenceBuilder(midSpike.end())
-                .back(4)
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 600;
-                    robot.sliderS();
-                })
-                .build();
-        TrajectorySequence midRepo = drive.trajectorySequenceBuilder(new Pose2d(new Vector2d(midBack.end().getX(),midBack.end().getY()),Math.toRadians(0)))
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 1000;
-                    robot.sliderS();
-                })
-                .forward(39)
-                .addDisplacementMarker(() -> {
                     robot.servoS();
                 })
+                .splineTo(new Vector2d(52, 36), Math.toRadians(0))
                 .build();
-        TrajectorySequence midPark = drive.trajectorySequenceBuilder(midRepo.end())
-                .strafeLeft(3)
-                .build();
-        TrajectorySequence midPark0 = drive.trajectorySequenceBuilder(midPark.end())
-                .back(5)
-                .build();
-        TrajectorySequence midPark1 = drive.trajectorySequenceBuilder(midPark0.end())
-                .strafeLeft(32)
-                .build();
-        TrajectorySequence midPark2 = drive.trajectorySequenceBuilder(midPark1.end())
-                .forward(18)
-                .build();
-        //
-        TrajectorySequence leftSpike = drive.trajectorySequenceBuilder(startPose)
-                .splineTo(new Vector2d( 18,35 ), Math.toRadians(-45))
+        TrajectorySequence midpart2 = drive.trajectorySequenceBuilder(midpart1.end())
+                .back(1)
                 .addDisplacementMarker(() -> {
-                    robot.sliderPos = 200;
+                    robot.sliderPos = 0;
                     robot.sliderS();
+                    robot.servoS();
                 })
+                .splineTo(new Vector2d(10, 60), Math.toRadians(180))
+                .back(60)
+                .strafeLeft(50)
                 .build();
-        TrajectorySequence leftBack = drive.trajectorySequenceBuilder(leftSpike.end())
+        //left
+        TrajectorySequence leftpart1 = drive.trajectorySequenceBuilder(new Pose2d(12, 65, Math.toRadians(-90)))
+                .splineTo(new Vector2d(18, 40), Math.toRadians(-45))
                 .back(7)
+                .turn(Math.toRadians(45))
+                .forward(1)
                 .addDisplacementMarker(() -> {
-                    robot.sliderPos = 600;
+                    robot.sliderPos = 0;
                     robot.sliderS();
-                })
-                .build();
-        TrajectorySequence leftRepo = drive.trajectorySequenceBuilder( new Pose2d(new Vector2d(leftBack.end().getX(),leftBack.end().getY()),Math.toRadians(0)))
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 1000;
-                    robot.sliderS();
-                })
-                .forward(39)
-                .addDisplacementMarker(() -> {
                     robot.servoS();
                 })
+                .splineTo(new Vector2d(52, 42), Math.toRadians(0))
                 .build();
-        TrajectorySequence leftPark0 = drive.trajectorySequenceBuilder(leftRepo.end())
-                .strafeLeft(1)
+        TrajectorySequence leftpart2 = drive.trajectorySequenceBuilder(leftpart1.end())
+                .back(1)
+                .addDisplacementMarker(() -> {
+                    robot.sliderPos = 0;
+                    robot.sliderS();
+                    robot.servoS();
+                })
+                .splineTo(new Vector2d(10, 60), Math.toRadians(180))
+                .back(45)
+                .strafeLeft(50)
                 .build();
-        TrajectorySequence leftPark1 = drive.trajectorySequenceBuilder(leftPark0.end())
-                .back(12)
+        //right
+        TrajectorySequence rightpart1 = drive.trajectorySequenceBuilder(new Pose2d(12, 65, Math.toRadians(-90)))
+                .splineTo(new Vector2d(6,40 ), Math.toRadians(-135))
+                .back(7)
+                .turn(Math.toRadians(135))
+                .addDisplacementMarker(() -> {
+                    robot.sliderPos = 0;
+                    robot.sliderS();
+                    robot.servoS();
+                })
+                .splineTo(new Vector2d(52,26 ), Math.toRadians(0))
                 .build();
-        TrajectorySequence leftPark2 = drive.trajectorySequenceBuilder(leftPark1.end())
-                .strafeLeft(37)
-                .build();
-        TrajectorySequence lPark = drive.trajectorySequenceBuilder(leftPark2.end())
-                .forward(20)
+        TrajectorySequence rightpart2 = drive.trajectorySequenceBuilder(rightpart1.end())
+                .back(1)
+                .addDisplacementMarker(() -> {
+                    robot.sliderPos = 0;
+                    robot.sliderS();
+                    robot.servoS();
+                })
+                .splineTo(new Vector2d(10,60 ), Math.toRadians(180))
+                .back(45)
+                .strafeLeft(50)
                 .build();
         //final destination
+        TrajectorySequence park = drive.trajectorySequenceBuilder(midpart2.end())
+                .lineTo(new Vector2d(-60, 11.5))
+                .addDisplacementMarker(() -> {
+                    robot.intakeToggle();
+                    sleep(5000);
+                    robot.intakeToggle();
+                })
+                .forward(70)
+                .addDisplacementMarker(() -> {
+                    robot.sliderPos = 800;
+                    robot.sliderS();
+                    robot.servoS();
+                })
+                .splineTo(new Vector2d(52, 42), Math.toRadians(0))
+                .build();
         initTfod();
         robot.init(telemetry, hardwareMap);
         robot.clawServo.setPosition(0.25);
@@ -190,65 +164,38 @@ public class OUTtoni1000 extends LinearOpMode {
         //roadrunner
         switch (target) {
             case 0:
-                // traiectorie pt stanga spike back repo park
+                drive.followTrajectorySequence(leftpart1);
+                sleep(1000);
                 robot.clawServo.setPosition(0);
-                drive.followTrajectorySequence(leftSpike);
-                drive.followTrajectorySequence(leftBack);
-                drive.turn(Math.toRadians(45));
-                //
-                drive.followTrajectorySequence(leftRepo);
-                drive.followTrajectorySequence(leftPark0);
                 sleep(1000);
-                robot.clawServo.setPosition(0.25);
-                sleep(1000);
-                robot.sliderPos = 0;
-                robot.sliderS();
-                robot.servoS();
-                drive.followTrajectorySequence(leftPark1);
-                robot.sliderPos = 0;
-                robot.sliderS();
-                drive.followTrajectorySequence(leftPark2);
-                drive.followTrajectorySequence(lPark);
+                drive.followTrajectorySequence(leftpart2);
                 break;
             case 2:
-                // traiectorie pt dreapta
+                drive.followTrajectorySequence(rightpart1);
+                sleep(1000);
                 robot.clawServo.setPosition(0);
-                drive.followTrajectorySequence(rightSpike);
-                drive.followTrajectorySequence(rightBack);
-                drive.turn(Math.toRadians(135));
-                //
-                drive.followTrajectorySequence(rightRepo);
-                drive.followTrajectorySequence(rightPark0);
                 sleep(1000);
-                robot.clawServo.setPosition(0.25);
-                sleep(1000);
-                robot.sliderPos = 0;
-                robot.sliderS();
-                robot.servoS();
-                drive.followTrajectorySequence(rightPark1);
-                drive.followTrajectorySequence(rightPark2);
-                drive.followTrajectorySequence(rightPark3);
+                drive.followTrajectorySequence(rightpart2);
+
                 break;
             case 1:
-                // traiectorie pt mijloc
+                drive.followTrajectorySequence(midpart1);
+                sleep(1000);
                 robot.clawServo.setPosition(0);
-                drive.followTrajectorySequence(midSpike);
-                drive.followTrajectorySequence(midBack);
-                drive.turn(Math.toRadians(90));
-                //
-                drive.followTrajectorySequence(midRepo);
-                drive.followTrajectorySequence(midPark);
                 sleep(1000);
-                robot.clawServo.setPosition(0.25);
-                sleep(1000);
-                robot.sliderPos = 0;
-                robot.sliderS();
-                robot.servoS();
-                drive.followTrajectorySequence(midPark1);
-                drive.followTrajectorySequence(midPark2);
+                drive.followTrajectorySequence(midpart2);
+
                 break;
         }
+        drive.followTrajectorySequence(park);
+        sleep(1000);
+        robot.clawServo.setPosition(0);
+        sleep(1000);
+        robot.sliderPos = 800;
+        robot.sliderS();
+        robot.servoS();
     }   // end runOpMode(
+
     /**
      * Initialize the TensorFlow Object Detection processor.
      */

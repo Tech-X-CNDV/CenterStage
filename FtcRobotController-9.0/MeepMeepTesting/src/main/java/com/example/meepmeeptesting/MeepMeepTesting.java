@@ -17,19 +17,45 @@ public class MeepMeepTesting {
         RoadRunnerBotEntity myFirstBot = new DefaultBotBuilder(meepMeep)
                 // We set this bot to be blue
                 .setColorScheme(new ColorSchemeBlueDark())
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(30, 60, Math.toRadians(180), Math.toRadians(180), 13)
+                /*
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-35, -60, Math.toRadians(90)))
-//                                .splineTo(
-//                                        new Vector2d(-30,-35),
-//                                        Math.toRadians(45),
-//                                        SampleMecanumDrive.getVelocityConstraint(30, 30,15),
-//                                        SampleMecanumDrive.getAccelerationConstraint(60)
-//                                        )
-                                //.forward(30,SampleMecanumDrive.getVelocityConstraint(30,30,15),SampleMecanumDrive.getAccelerationConstraint(60))
+                        drive.trajectorySequenceBuilder(new Pose2d(-35.5, 65, Math.toRadians(-90)))
+                                .splineTo(new Vector2d(-29.5,40 ), Math.toRadians(-45))
+                                .back(8)
+                                .turn(Math.toRadians(45))
+                                .strafeRight(35)
+                                .lineTo(new Vector2d(-60,11.5))
+                                .forward(70)
+                                .splineTo(new Vector2d(52,42 ), Math.toRadians(0))
                                 .build()
-                );
 
+                 */
+                /*
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(new Pose2d(-35.5, 65, Math.toRadians(-90)))
+                                .splineTo(new Vector2d(-42.5,40 ), Math.toRadians(-135))
+                                .back(8)
+                                .turn(Math.toRadians(135))
+                                .strafeRight(35)
+                                .lineTo(new Vector2d(-60,11.5))
+                                .forward(70)
+                                .splineTo(new Vector2d(52,26 ), Math.toRadians(0))
+                                .build()
+                */
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(new Pose2d(-35.5, 65, Math.toRadians(-90)))
+                                .forward(30)
+                                .back(2)
+                                .strafeRight(15)
+                                .forward(30)
+                                .turn(Math.toRadians(90))
+                                .lineTo(new Vector2d(-60,11.5))
+                                .forward(70)
+                                .splineTo(new Vector2d(52,36 ), Math.toRadians(0))
+                                .build()
+
+                );
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
