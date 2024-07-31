@@ -45,16 +45,25 @@ public class MeepMeepTesting {
                 */
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-35.5, 65, Math.toRadians(-90)))
-                                .forward(30)
-                                .back(2)
-                                .strafeRight(15)
-                                .forward(30)
+                                .forward(10)
+                                .splineTo(new Vector2d(-44,40),Math.toRadians(-135))
+                                .setReversed(true)
+                                .splineTo(new Vector2d(-35.5,50),Math.toRadians(90))
+                                .setReversed(false)
+                                /*
+                                .addDisplacementMarker(()->{
+                                    robot.leftSliderMotor.setTargetPosition(robot.presetPos+50);
+                                    robot.rightSliderMotor.setTargetPosition(robot.presetPos+50);
+                                })
+                                */
+                                .forward(47.5)
                                 .turn(Math.toRadians(90))
-                                .lineTo(new Vector2d(-60,11.5))
-                                .forward(70)
-                                .splineTo(new Vector2d(52,36 ), Math.toRadians(0))
+                                //intake
+                                .back(30)
+                                .turn(Math.toRadians(10))
+                                .turn(Math.toRadians(-10))
+                                .forward(90)
                                 .build()
-
                 );
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)

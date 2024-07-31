@@ -28,7 +28,7 @@ import java.util.List;
 
 @Autonomous
 
-public class LucretiaBlue extends LinearOpMode {
+public class LucretiaRED extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -37,7 +37,7 @@ public class LucretiaBlue extends LinearOpMode {
     //private static final String TFOD_MODEL_ASSET = "MyModelStoredAsAsset.tflite";
     // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
     // this is used when uploading models directly to the RC using the model upload interface.
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/blue.tflite";
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/red.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
             "Pixel",
@@ -57,7 +57,7 @@ public class LucretiaBlue extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         //robot.init(telemetry,hardwareMap);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(11.5, 65, Math.toRadians(-90));
+        Pose2d startPose = new Pose2d(11.5, -65, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
         //
         robot.rightSliderMotor = hardwareMap.get(DcMotor.class, "rightSliderMotor");
@@ -75,10 +75,9 @@ public class LucretiaBlue extends LinearOpMode {
 
         robot.leftGrab = hardwareMap.get(Servo.class, "leftGrab");
         robot.rightGrab = hardwareMap.get(Servo.class, "rightGrab");
-
+        //mid
         robot.leftSliderMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         robot.rightSliderMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        //mid
         /*
         TrajectorySequence midpart1 = drive.trajectorySequenceBuilder(new Pose2d(12, 65, Math.toRadians(-90)))
                 .forward(30)
@@ -107,51 +106,53 @@ public class LucretiaBlue extends LinearOpMode {
 
          */
         Trajectory leftpart1 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .splineTo(new Vector2d(17.5, 40), Math.toRadians(-45))
+                .splineTo(new Vector2d(5.5, -40), Math.toRadians(135))
                 .build();
-        Trajectory leftpart2 = drive.trajectoryBuilder(leftpart1.end(),true)
-                .splineTo(new Vector2d(11.5, 60), Math.toRadians(90))
+        Trajectory leftpart2 = drive.trajectoryBuilder(leftpart1.end(), true)
+                .splineTo(new Vector2d(11.5, -60), Math.toRadians(-90))
                 .build();
-        TrajectorySequence leftpart3 = drive.trajectorySequenceBuilder(leftpart2.end())
-                .turn(Math.toRadians(90))
+
+        TrajectorySequence leftstack1 = drive.trajectorySequenceBuilder(leftpart2.end())
+                .turn(Math.toRadians(-90))
                 .build();
 
         TrajectorySequence midpart1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineTo(new Vector2d(11.5,35))
+                .lineTo(new Vector2d(11.5, -35))
                 .back(25)
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .build();
 
         Trajectory rightpart1 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .splineTo(new Vector2d(5.5, 40), Math.toRadians(-135))
+                .splineTo(new Vector2d(17.5, -40), Math.toRadians(45))
                 .build();
-        Trajectory rightpart2 = drive.trajectoryBuilder(rightpart1.end(),true)
-                .splineTo(new Vector2d(11.5, 60), Math.toRadians(90))
+        Trajectory rightpart2 = drive.trajectoryBuilder(rightpart1.end(), true)
+                .splineTo(new Vector2d(11.5, -60), Math.toRadians(-90))
                 .build();
-        TrajectorySequence rightpart3 = drive.trajectorySequenceBuilder(rightpart2.end())
-                .turn(Math.toRadians(90))
+        TrajectorySequence rightstack1 = drive.trajectorySequenceBuilder(rightpart2.end())
+                .turn(Math.toRadians(-90))
                 .build();
 
-        TrajectorySequence stack = drive.trajectorySequenceBuilder(new Pose2d(new Vector2d(11.5, 60), Math.toRadians(0)))
-                .forward(1)
-                .addDisplacementMarker(() -> {
+
+        TrajectorySequence stack = drive.trajectorySequenceBuilder(new Pose2d(new Vector2d(11.5, -60), Math.toRadians(0)))
+                .addDisplacementMarker( () -> {
                     robot.sliderPos = 0;
                     robot.sliderS();
                     robot.servoS();
                 })
+                .back(1)
                 .build();
         Trajectory midpanel1 = drive.trajectoryBuilder(stack.end())
-                .lineTo(new Vector2d(55.5, 39))
+                .lineTo(new Vector2d(53, -36.5))
                 .build();
         Trajectory rightpanel1 = drive.trajectoryBuilder(stack.end())
-                .lineTo(new Vector2d(57, 32))
+                .lineTo(new Vector2d(53, -29))
                 .build();
         Trajectory leftpanel1 = drive.trajectoryBuilder(stack.end())
-                .lineTo(new Vector2d(55.5, 43))
+                .lineTo(new Vector2d(53, -41))
                 .build();
 
-        Trajectory park = drive.trajectoryBuilder(new Pose2d(new Vector2d(52,35),0))
-                .strafeLeft(30).build();
+        Trajectory park = drive.trajectoryBuilder(new Pose2d(new Vector2d(52, -35), 0))
+                .strafeRight(30).build();
         initTfod();
         // robot.init(telemetry, hardwareMap);
         robot.clawServo.setPosition(0);
@@ -179,18 +180,18 @@ public class LucretiaBlue extends LinearOpMode {
             case 0:
                 drive.followTrajectory(leftpart1);
                 drive.followTrajectory(leftpart2);
-                drive.followTrajectorySequence(leftpart3);
-               // drive.followTrajectory(leftstack1);
+                drive.followTrajectorySequence(leftstack1);
+               // drive.followTrajectorySequence(leftstack2);
                 break;
             case 2:
                 drive.followTrajectory(rightpart1);
                 drive.followTrajectory(rightpart2);
-                drive.followTrajectorySequence(rightpart3);
-               // drive.followTrajectory(rightstack1);
+                drive.followTrajectorySequence(rightstack1);
+               // drive.followTrajectorySequence(rightstack2);
                 break;
             case 1:
                 drive.followTrajectorySequence(midpart1);
-                //drive.followTrajectory(midstack1);
+              //  drive.followTrajectory(midstack1);
                 break;
         }
         /*
@@ -204,23 +205,23 @@ public class LucretiaBlue extends LinearOpMode {
         robot.outakeToggle();
         sleep(2500);
         robot.outakeToggle();
-                 */
-        //sleep(5000);
+         */
+       // sleep(5000);
         drive.followTrajectorySequence(stack);
         switch (target) {
-            case 0:
+            case 2:
                 drive.followTrajectory(leftpanel1);
                 break;
             case 1:
                 drive.followTrajectory(midpanel1);
                 break;
-            case 2:
+            case 0:
                 drive.followTrajectory(rightpanel1);
                 break;
         }
         sleep(500);
-        robot.clawServo.setPosition(0.6);
-        sleep(500);
+        robot.clawServo.setPosition(0.55);
+        sleep(1000);
         robot.servoS();
         sleep(200);
         robot.sliderPos = 0;
@@ -258,11 +259,7 @@ public class LucretiaBlue extends LinearOpMode {
 
         VisionPortal.Builder builder = new VisionPortal.Builder();
 
-        if (USE_WEBCAM) {
-            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam"));
-        } else {
-            builder.setCamera(BuiltinCameraDirection.BACK);
-        }
+        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam"));
 
         builder.setCameraResolution(new Size(camerax, cameray));
 

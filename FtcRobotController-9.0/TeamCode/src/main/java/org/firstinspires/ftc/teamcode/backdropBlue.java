@@ -28,7 +28,7 @@ import java.util.List;
 
 @Autonomous
 
-public class LucretiaBlue extends LinearOpMode {
+public class backdropBlue extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -50,7 +50,7 @@ public class LucretiaBlue extends LinearOpMode {
     private int cameray = 720;
     private int target = 0;
 
-    CRobot robot = new CRobot();
+    CRobo robot = new CRobo();
 
     @Override
 
@@ -65,96 +65,159 @@ public class LucretiaBlue extends LinearOpMode {
 
         robot.touchSensor = hardwareMap.get(TouchSensor.class, "touch");
 
-        robot.clawServo = hardwareMap.get(Servo.class, "clawServo");
+        robot.tinderServo = hardwareMap.get(Servo.class, "tinderServo");
+        //robot.clawServo = hardwareMap.get(Servo.class, "clawServo");
 
-        robot.rampServo = hardwareMap.get(CRServo.class, "rampServo");
+        robot.rampServo = hardwareMap.get(Servo.class, "rampServo");
         robot.rampMotor = hardwareMap.get(DcMotor.class, "rampMotor");
 
-        robot.leftServo = hardwareMap.get(Servo.class, "leftServo");
-        robot.rightServo = hardwareMap.get(Servo.class, "rightServo");
+        robot.arm1Servo = hardwareMap.get(Servo.class, "arm1Servo");
+        robot.arm2Servo = hardwareMap.get(Servo.class, "arm2Servo");
 
-        robot.leftGrab = hardwareMap.get(Servo.class, "leftGrab");
-        robot.rightGrab = hardwareMap.get(Servo.class, "rightGrab");
-
+        //robot.leftGrab = hardwareMap.get(Servo.class, "leftGrab");
+        //robot.rightGrab = hardwareMap.get(Servo.class, "rightGrab");
+        //mid
         robot.leftSliderMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         robot.rightSliderMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        //mid
-        /*
-        TrajectorySequence midpart1 = drive.trajectorySequenceBuilder(new Pose2d(12, 65, Math.toRadians(-90)))
+
+        TrajectorySequence purpleRight = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .forward(10)
+                .splineTo(new Vector2d(3, 40), Math.toRadians(-135))
+                .setReversed(true)
+                .splineTo(new Vector2d(11.5, 50), Math.toRadians(90))
+                .waitSeconds(5)
+                .setReversed(false)
+                .addDisplacementMarker(() -> {
+                    robot.leftSliderMotor.setTargetPosition(robot.presetPos + 50);
+                    robot.rightSliderMotor.setTargetPosition(robot.presetPos + 50);
+                })
+                .splineTo(new Vector2d(44, 34.5), Math.toRadians(0))
+                .addDisplacementMarker(() -> {
+                    robot.arm1Servo.setPosition(0.5);
+                    robot.arm2Servo.setPosition(0.5);
+                })
+                .waitSeconds(0.5)
+                .forward(0.1)
+                .addDisplacementMarker(() -> {
+                    robot.tinderServo.setPosition(0.95);
+                })
+                .setReversed(true)
+                .waitSeconds(1)
+                .forward(0.1)
+                .addDisplacementMarker(() -> {
+                    robot.arm1Servo.setPosition(0.14);
+                    robot.arm2Servo.setPosition(0.14);
+                })
+                .waitSeconds(1)
+                .UNSTABLE_addDisplacementMarkerOffset(15, () -> {
+                    robot.leftSliderMotor.setTargetPosition(0);
+                    robot.rightSliderMotor.setTargetPosition(0);
+                })
+                .lineTo(new Vector2d(43, 65))
+                .build();
+        TrajectorySequence purpleLeft = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .forward(10)
+                .splineTo(new Vector2d(19, 40), Math.toRadians(-45))
+                .setReversed(true)
+                .splineTo(new Vector2d(11.5, 60), Math.toRadians(90))
+                .waitSeconds(5)
+                .setReversed(false)
+                .addDisplacementMarker(() -> {
+                    robot.leftSliderMotor.setTargetPosition(robot.presetPos + 50);
+                    robot.rightSliderMotor.setTargetPosition(robot.presetPos + 50);
+                })
+                .splineTo(new Vector2d(44, 49), Math.toRadians(0))
+                .addDisplacementMarker(() -> {
+                    robot.arm1Servo.setPosition(0.5);
+                    robot.arm2Servo.setPosition(0.5);
+                })
+                .waitSeconds(0.5)
+                .forward(0.1)
+                .addDisplacementMarker(() -> {
+                    robot.tinderServo.setPosition(0.95);
+                })
+                .setReversed(true)
+                .waitSeconds(1)
+                .forward(0.1)
+                .addDisplacementMarker(() -> {
+                    robot.arm1Servo.setPosition(0.14);
+                    robot.arm2Servo.setPosition(0.14);
+                })
+                .waitSeconds(1)
+                .UNSTABLE_addDisplacementMarkerOffset(15, () -> {
+                    robot.leftSliderMotor.setTargetPosition(0);
+                    robot.rightSliderMotor.setTargetPosition(0);
+                })
+                .lineTo(new Vector2d(43, 65))
+                .build();
+        TrajectorySequence purpleMid = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                 .forward(30)
+                .back(20)
+                .waitSeconds(5)
+                .addDisplacementMarker(() -> {
+                    robot.leftSliderMotor.setTargetPosition(robot.presetPos + 50);
+                    robot.rightSliderMotor.setTargetPosition(robot.presetPos + 50);
+                })
+                .setReversed(false)
+                .splineTo(new Vector2d(44, 41.5), Math.toRadians(0))
+                .addDisplacementMarker(() -> {
+                    robot.arm1Servo.setPosition(0.5);
+                    robot.arm2Servo.setPosition(0.5);
+                })
+                .waitSeconds(0.5)
+                .forward(0.1)
+                .addDisplacementMarker(() -> {
+                    robot.tinderServo.setPosition(0.95);
+                })
+                .setReversed(true)
+                .waitSeconds(1)
+                .forward(0.1)
+                .addDisplacementMarker(() -> {
+                    robot.arm1Servo.setPosition(0.14);
+                    robot.arm2Servo.setPosition(0.14);
+                })
+                .waitSeconds(1)
+                .UNSTABLE_addDisplacementMarkerOffset(15, () -> {
+                    robot.leftSliderMotor.setTargetPosition(0);
+                    robot.rightSliderMotor.setTargetPosition(0);
+                })
+                .lineTo(new Vector2d(43, 65))
+                .build();
+        TrajectorySequence whitePixel = drive.trajectorySequenceBuilder(new Pose2d(new Vector2d(25, 15), 0))
+                .back(95)
+                .addDisplacementMarker(90, () -> {
+                    robot.rampServo.setPosition(1);
+                })
+                .addDisplacementMarker(() -> {
+                    robot.rampMotor.setPower(1);
+                })
+                .strafeRight(38)
+                .waitSeconds(2)
+                .forward(110)
+                .UNSTABLE_addDisplacementMarkerOffset(5, () -> {
+                    robot.rampMotor.setPower(-1);
+                })
+                .UNSTABLE_addDisplacementMarkerOffset(30, () -> {
+                    robot.tinderServo.setPosition(0.75);
+                    robot.rampMotor.setPower(0);
+                })
+                .build();
+                /*
+                .strafeRight(25)
+                .UNSTABLE_addDisplacementMarkerOffset(5,()->{
+                    robot.rampMotor.setPower(1);
+                })
                 .back(10)
-                .turn(Math.toRadians(90))
-                .forward(1)
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 0;
-                    robot.sliderS();
-                    robot.servoS();
-                })
-                .splineTo(new Vector2d(52, 36), Math.toRadians(0))
-                .build();
-        TrajectorySequence midpart2 = drive.trajectorySequenceBuilder(midpart1.end())
-                .back(1)
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 0;
-                    robot.sliderS();
-                    robot.servoS();
-                })
-                .splineTo(new Vector2d(10, 60), Math.toRadians(180))
-                .back(60)
-                .strafeLeft(50)
-                .build();
-        //left
+                 */
 
-         */
-        Trajectory leftpart1 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .splineTo(new Vector2d(17.5, 40), Math.toRadians(-45))
-                .build();
-        Trajectory leftpart2 = drive.trajectoryBuilder(leftpart1.end(),true)
-                .splineTo(new Vector2d(11.5, 60), Math.toRadians(90))
-                .build();
-        TrajectorySequence leftpart3 = drive.trajectorySequenceBuilder(leftpart2.end())
-                .turn(Math.toRadians(90))
-                .build();
-
-        TrajectorySequence midpart1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .lineTo(new Vector2d(11.5,35))
-                .back(25)
-                .turn(Math.toRadians(90))
-                .build();
-
-        Trajectory rightpart1 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .splineTo(new Vector2d(5.5, 40), Math.toRadians(-135))
-                .build();
-        Trajectory rightpart2 = drive.trajectoryBuilder(rightpart1.end(),true)
-                .splineTo(new Vector2d(11.5, 60), Math.toRadians(90))
-                .build();
-        TrajectorySequence rightpart3 = drive.trajectorySequenceBuilder(rightpart2.end())
-                .turn(Math.toRadians(90))
-                .build();
-
-        TrajectorySequence stack = drive.trajectorySequenceBuilder(new Pose2d(new Vector2d(11.5, 60), Math.toRadians(0)))
-                .forward(1)
-                .addDisplacementMarker(() -> {
-                    robot.sliderPos = 0;
-                    robot.sliderS();
-                    robot.servoS();
-                })
-                .build();
-        Trajectory midpanel1 = drive.trajectoryBuilder(stack.end())
-                .lineTo(new Vector2d(55.5, 39))
-                .build();
-        Trajectory rightpanel1 = drive.trajectoryBuilder(stack.end())
-                .lineTo(new Vector2d(57, 32))
-                .build();
-        Trajectory leftpanel1 = drive.trajectoryBuilder(stack.end())
-                .lineTo(new Vector2d(55.5, 43))
-                .build();
-
-        Trajectory park = drive.trajectoryBuilder(new Pose2d(new Vector2d(52,35),0))
-                .strafeLeft(30).build();
         initTfod();
         // robot.init(telemetry, hardwareMap);
-        robot.clawServo.setPosition(0);
+        // robot.clawServo.setPosition(0);
+        robot.arm1Servo.setPosition(0.14);
+        robot.arm2Servo.setPosition(0.14);
+        robot.rampServo.setDirection(Servo.Direction.REVERSE);
+        robot.rampServo.setPosition(0.1);
+        robot.tinderServo.setPosition(0.75);
         while (!isStarted() && !isStopRequested()) {
 
             telemetryTfod();
@@ -177,65 +240,20 @@ public class LucretiaBlue extends LinearOpMode {
         //roadrunner
         switch (target) {
             case 0:
-                drive.followTrajectory(leftpart1);
-                drive.followTrajectory(leftpart2);
-                drive.followTrajectorySequence(leftpart3);
-               // drive.followTrajectory(leftstack1);
-                break;
-            case 2:
-                drive.followTrajectory(rightpart1);
-                drive.followTrajectory(rightpart2);
-                drive.followTrajectorySequence(rightpart3);
-               // drive.followTrajectory(rightstack1);
+                drive.followTrajectorySequence(purpleLeft);
                 break;
             case 1:
-                drive.followTrajectorySequence(midpart1);
-                //drive.followTrajectory(midstack1);
-                break;
-        }
-        /*
-        robot.clawServo.setPosition(0.6);
-        robot.intakeToggle();
-        robot.Grab();
-        sleep(500);
-        robot.Grab();
-        robot.clawServo.setPosition(0);
-        robot.intakeToggle();
-        robot.outakeToggle();
-        sleep(2500);
-        robot.outakeToggle();
-                 */
-        //sleep(5000);
-        drive.followTrajectorySequence(stack);
-        switch (target) {
-            case 0:
-                drive.followTrajectory(leftpanel1);
-                break;
-            case 1:
-                drive.followTrajectory(midpanel1);
+                drive.followTrajectorySequence(purpleMid);
                 break;
             case 2:
-                drive.followTrajectory(rightpanel1);
+                drive.followTrajectorySequence(purpleRight);
                 break;
         }
-        sleep(500);
-        robot.clawServo.setPosition(0.6);
-        sleep(500);
-        robot.servoS();
-        sleep(200);
-        robot.sliderPos = 0;
-        robot.sliderS();
-        drive.followTrajectory(park);
-        /*
-        drive.followTrajectorySequence(park);
-        sleep(1000);
-        robot.clawServo.setPosition(0);
-        sleep(1000);
-        robot.sliderPos = 800;
-        robot.sliderS();
-        robot.servoS();
-
-         */
+        while (!isStopRequested()){
+            robot.leftSliderMotor.setTargetPosition(0);
+        robot.rightSliderMotor.setTargetPosition(0);
+    }
+        //  drive.followTrajectorySequence(whitePixel);
     }   // end runOpMode(
 
     /**
