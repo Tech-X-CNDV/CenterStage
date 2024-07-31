@@ -1,4 +1,3 @@
-/*
 package org.firstinspires.ftc.teamcode;
 
 import android.util.Size;
@@ -10,7 +9,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.apache.commons.math3.geometry.euclidean.twod.Line;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -52,66 +55,113 @@ public class CoacazaBlue extends LinearOpMode {
     @Override
 
     public void runOpMode() throws InterruptedException {
-        robot.init(telemetry, hardwareMap);
+        //robot.init(telemetry,hardwareMap);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(-35.5, 65, Math.toRadians(-90));
         drive.setPoseEstimate(startPose);
-        TrajectorySequence mid = drive.trajectorySequenceBuilder(new Pose2d(-35.5, 65, Math.toRadians(-90)))
+        //
+        robot.rightSliderMotor = hardwareMap.get(DcMotor.class, "rightSliderMotor");
+        robot.leftSliderMotor = hardwareMap.get(DcMotor.class, "leftSliderMotor");
+
+        robot.touchSensor = hardwareMap.get(TouchSensor.class, "touch");
+
+        robot.clawServo = hardwareMap.get(Servo.class, "clawServo");
+
+        robot.rampServo = hardwareMap.get(CRServo.class, "rampServo");
+        robot.rampMotor = hardwareMap.get(DcMotor.class, "rampMotor");
+
+        robot.leftServo = hardwareMap.get(Servo.class, "leftServo");
+        robot.rightServo = hardwareMap.get(Servo.class, "rightServo");
+
+        robot.leftGrab = hardwareMap.get(Servo.class, "leftGrab");
+        robot.rightGrab = hardwareMap.get(Servo.class, "rightGrab");
+
+        robot.leftSliderMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        robot.rightSliderMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        //mid
+        /*
+        TrajectorySequence midpart1 = drive.trajectorySequenceBuilder(new Pose2d(12, 65, Math.toRadians(-90)))
                 .forward(30)
-                .back(2)
-                .strafeLeft(15)
-                .forward(30)
+                .back(10)
                 .turn(Math.toRadians(90))
-                .lineTo(new Vector2d(-60, 11.5))
+                .forward(1)
                 .addDisplacementMarker(() -> {
-                    robot.intakeToggle();
-                    sleep(5000);
-                    robot.intakeToggle();
-                    robot.outakeToggle();
-                    sleep(5000);
-                    robot.outakeToggle();
+                    robot.sliderPos = 0;
+                    robot.sliderS();
+                    robot.servoS();
                 })
-                .forward(70)
                 .splineTo(new Vector2d(52, 36), Math.toRadians(0))
                 .build();
-        TrajectorySequence right= drive.trajectorySequenceBuilder(new Pose2d(-35.5, 65, Math.toRadians(-90)))
-                .splineTo(new Vector2d(-42.5,40 ), Math.toRadians(-135))
-                .back(8)
-                .turn(Math.toRadians(135))
-                .strafeLeft(35)
-                .lineTo(new Vector2d(-60,11.5))
+        TrajectorySequence midpart2 = drive.trajectorySequenceBuilder(midpart1.end())
+                .back(1)
                 .addDisplacementMarker(() -> {
-                    robot.intakeToggle();
-                    sleep(5000);
-                    robot.intakeToggle();
-                    robot.outakeToggle();
-                    sleep(5000);
-                    robot.outakeToggle();
+                    robot.sliderPos = 0;
+                    robot.sliderS();
+                    robot.servoS();
                 })
-                .forward(70)
-                .splineTo(new Vector2d(52,26 ), Math.toRadians(0))
+                .splineTo(new Vector2d(10, 60), Math.toRadians(180))
+                .back(60)
+                .strafeLeft(50)
                 .build();
-        TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d(-35.5, 65, Math.toRadians(-90)))
-                .splineTo(new Vector2d(-29.5,40 ), Math.toRadians(-45))
-                .back(8)
-                .turn(Math.toRadians(45))
-                .strafeLeft(35)
-                .lineTo(new Vector2d(-60,11.5))
-                .addDisplacementMarker(() -> {
-                    robot.intakeToggle();
-                    sleep(5000);
-                    robot.intakeToggle();
-                    robot.outakeToggle();
-                    sleep(5000);
-                    robot.outakeToggle();
-                })
-                .forward(70)
-                .splineTo(new Vector2d(52,42 ), Math.toRadians(0))
-                .build()
-        //final destination
+        //left
+
+         */
+        Trajectory leftpart1 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .splineTo(new Vector2d(-29.5, 40), Math.toRadians(-45))
+                .build();
+        Trajectory leftpart2 = drive.trajectoryBuilder(leftpart1.end(),true)
+                .splineTo(new Vector2d(-35.5, 60), Math.toRadians(90))
+                .build();
+        Trajectory leftpart3 = drive.trajectoryBuilder(leftpart2.end())
+                .forward(48.5)
+                .build();
+        Trajectory leftstack1 = drive.trajectoryBuilder(leftpart3.end(), true)
+                .lineToSplineHeading(new Pose2d(-56, 11.5, Math.toRadians(0)))
+                .build();
+
+        TrajectorySequence midpart1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineTo(new Vector2d(-35.5,35))
+                .back(10)
+                .strafeRight(15)
+                .forward(28.5)
+                .build();
+        Trajectory midstack1 = drive.trajectoryBuilder(midpart1.end(), true)
+                .splineTo(new Vector2d(-51, 11.5),Math.toRadians(180))
+                .build();
+
+        Trajectory rightpart1 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .splineTo(new Vector2d(-41.5, 40), Math.toRadians(-135))
+                .build();
+        Trajectory rightpart2 = drive.trajectoryBuilder(rightpart1.end(),true)
+                .splineTo(new Vector2d(-35.5, 60), Math.toRadians(90))
+                .build();
+        Trajectory rightpart3 = drive.trajectoryBuilder(rightpart2.end())
+                .forward(48.5)
+                .build();
+        Trajectory rightstack1 = drive.trajectoryBuilder(rightpart3.end(), true)
+                .lineToSplineHeading(new Pose2d(-56, 11.5, Math.toRadians(0)))
+                .build();
+
+
+        TrajectorySequence stack = drive.trajectorySequenceBuilder(new Pose2d(new Vector2d(-59, 11.5), Math.toRadians(0)))
+                .strafeRight(1)
+                .forward(90)
+                .build();
+        Trajectory midpanel1 = drive.trajectoryBuilder(stack.end())
+                .lineTo(new Vector2d(51.5, 35))
+                .build();
+        Trajectory rightpanel1 = drive.trajectoryBuilder(stack.end())
+                .lineTo(new Vector2d(51.5, 30))
+                .build();
+        Trajectory leftpanel1 = drive.trajectoryBuilder(stack.end())
+                .lineTo(new Vector2d(51.5, 45))
+                .build();
+
+        Trajectory park = drive.trajectoryBuilder(new Pose2d(new Vector2d(52,15),0))
+                        .forward(2).build();
         initTfod();
-        robot.init(telemetry, hardwareMap);
-        robot.clawServo.setPosition(0.25);
+        // robot.init(telemetry, hardwareMap);
+        robot.clawServo.setPosition(0);
         while (!isStarted() && !isStopRequested()) {
 
             telemetryTfod();
@@ -121,6 +171,7 @@ public class CoacazaBlue extends LinearOpMode {
         }
         waitForStart();
         visionPortal.close();
+
         robot.leftSliderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.leftSliderMotor.setTargetPosition(0);
         robot.leftSliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -129,28 +180,77 @@ public class CoacazaBlue extends LinearOpMode {
         robot.rightSliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.leftSliderMotor.setPower(1);
         robot.rightSliderMotor.setPower(1);
+
         //roadrunner
         switch (target) {
             case 0:
-                drive.followTrajectorySequence(left);
-
+                drive.followTrajectory(leftpart1);
+                drive.followTrajectory(leftpart2);
+                drive.followTrajectory(leftpart3);
+                drive.followTrajectory(leftstack1);
                 break;
             case 2:
-                drive.followTrajectorySequence(right);
-
+                drive.followTrajectory(rightpart1);
+                drive.followTrajectory(rightpart2);
+                drive.followTrajectory(rightpart3);
+                drive.followTrajectory(rightstack1);
                 break;
             case 1:
-                drive.followTrajectorySequence(mid);
-
+                drive.followTrajectorySequence(midpart1);
+                drive.followTrajectory(midstack1);
                 break;
         }
+        /*
+        robot.clawServo.setPosition(0.6);
+        robot.intakeToggle();
+        robot.Grab();
+        sleep(500);
+        robot.Grab();
+        robot.clawServo.setPosition(0);
+        robot.intakeToggle();
+        robot.outakeToggle();
+        sleep(2500);
+        robot.outakeToggle();
+                 */
+        sleep(5000);
+        drive.followTrajectorySequence(stack);
+        robot.sliderPos = 700;
+        robot.sliderS();
+        robot.servoS();
+        switch (target) {
+            case 0:
+                drive.followTrajectory(leftpanel1);
+                break;
+            case 1:
+                drive.followTrajectory(midpanel1);
+                break;
+            case 2:
+                drive.followTrajectory(rightpanel1);
+                break;
+        }
+        sleep(500);
+        robot.clawServo.setPosition(0.6);
+        sleep(500);
+        robot.servoS();
+        sleep(200);
+        robot.sliderPos = 0;
+        robot.sliderS();
+        drive.followTrajectory(park);
+        /*
+        drive.followTrajectorySequence(park);
+        sleep(1000);
+        robot.clawServo.setPosition(0);
+        sleep(1000);
+        robot.sliderPos = 800;
+        robot.sliderS();
+        robot.servoS();
+
+         */
     }   // end runOpMode(
 
-    */
-/**
+    /**
      * Initialize the TensorFlow Object Detection processor.
-     *//*
-
+     */
     private void initTfod() {
 
         // Create the TensorFlow processor by usin a builder.
@@ -181,7 +281,7 @@ public class CoacazaBlue extends LinearOpMode {
         // Set the stream format; MJPEG uses less bandwidth than default YUY2.
         builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
 
-        builder.setAutoStopLiveView(false);
+        builder.setAutoStopLiveView(true);
         builder.addProcessor(tfod);
         visionPortal = builder.build();
         tfod.setMinResultConfidence(0.6f);
@@ -189,11 +289,9 @@ public class CoacazaBlue extends LinearOpMode {
 
     }   // end method initTfod()
 
-    */
-/**
+    /**
      * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
-     *//*
-
+     */
     private void telemetryTfod() {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
@@ -214,4 +312,3 @@ public class CoacazaBlue extends LinearOpMode {
     }
 
 }
-*/

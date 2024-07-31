@@ -99,10 +99,10 @@ class CRobot {
     }
 
     public void plane() {
-        planeServo.setPosition(0);
+        planeServo.setPosition(1);
     }
 
-    public boolean grabPow;
+    public boolean grabPow = true;
 
     public void Grab() {
         grabPow = !grabPow;
@@ -179,7 +179,7 @@ class CRobot {
 
     public void clawServoCustom(float pos) {
 
-        clawServo.setPosition(Math.min(pos, 0.5));
+        clawServo.setPosition(Math.min(pos, 0.55));
     }
 
     public boolean servoPow;
@@ -190,8 +190,8 @@ class CRobot {
             leftServo.setPosition(1);
             rightServo.setPosition(0);
         } else {
-            leftServo.setPosition(0);
-            rightServo.setPosition(1);
+            leftServo.setPosition(0.29);
+            rightServo.setPosition(0.71);
         }
     }
 
@@ -261,9 +261,12 @@ public class test extends OpMode {
         robot.leftSliderMotor.setPower(1);
         robot.rightSliderMotor.setPower(1);
 
-        robot.leftServo.setPosition(0);
-        robot.rightServo.setPosition(1);
-        robot.planeServo.setPosition(1);
+        robot.leftServo.setPosition(0.29);
+        robot.rightServo.setPosition(0.71);
+        robot.planeServo.setPosition(0);
+
+        robot.leftGrab.setPosition(1);
+        robot.rightGrab.setPosition(0);
     }
 
     @Override
@@ -300,19 +303,24 @@ public class test extends OpMode {
         frontRightPower = (leftStickForward - leftStickSide - botSpin) / denominator;
         rearLeftPower = (leftStickForward - leftStickSide + botSpin) / denominator;
 
-       // robot.leftFrontMotor.setPower(frontLeftPower);
+        // robot.leftFrontMotor.setPower(frontLeftPower);
         //robot.rightRearMotor.setPower(rearRightPower);
 
         //robot.rightFrontMotor.setPower(frontRightPower);
         //robot.leftRearMotor.setPower(rearLeftPower);
-        double r = Math.hypot(gamepad2.left_stick_x, gamepad2.left_stick_y);
-        double robotAngle = Math.atan2(gamepad2.left_stick_y, gamepad2 .left_stick_x) - Math.PI / 4;
-        double rightX = gamepad2.right_stick_x;
-        final double v1 = r * Math.cos(robotAngle) + rightX;
-        final double v2 = r * Math.sin(robotAngle) - rightX;
-        final double v3 = r * Math.sin(robotAngle) + rightX;
-        final double v4 = r * Math.cos(robotAngle) - rightX;
-
+        double r = Math.hypot(gamepad2.left_stick_x, -gamepad2.left_stick_y);
+        double robotAngle = Math.atan2(-gamepad2.left_stick_y, gamepad2.left_stick_x) - Math.PI / 4;
+        double rightX = -gamepad2.right_stick_x;
+        double v1 = r * Math.cos(robotAngle) + rightX;
+        double v2 = r * Math.sin(robotAngle) - rightX;
+        double v3 = r * Math.sin(robotAngle) + rightX;
+        double v4 = r * Math.cos(robotAngle) - rightX;
+        if (speedLimit == true) {
+            v1 = v1 / 2.0d;
+            v2 = v2 / 2.0d;
+            v3 /= 2.0d;
+            v4 /= 2.0d;
+        }
         robot.leftFrontMotor.setPower(v1);
         robot.rightFrontMotor.setPower(v2);
         robot.leftRearMotor.setPower(v3);
@@ -329,18 +337,18 @@ public class test extends OpMode {
         // pressB1 = false;
         //}
         //if (!this.gamepad1.b) pressB1 = true;
-        robot.clawServoCustom(1-gamepad1.right_trigger);
+        robot.clawServoCustom(1 - gamepad1.right_trigger);
         if (this.gamepad2.right_bumper && pressRbumper2) {
             robot.intakeToggle();
             pressRbumper2 = false;
         }
         if (!this.gamepad2.right_bumper) pressRbumper2 = true;
 
-        if (this.gamepad2.b && pressB) {
+        if (this.gamepad2.right_trigger > 0 && pressB) {
             robot.outakeToggle();
             pressB = false;
         }
-        if (!this.gamepad2.b) pressB = true;
+        if (this.gamepad2.right_trigger == 0) pressB = true;
         //
         robot.planeLaunch(this.gamepad1.left_trigger);
 
@@ -379,13 +387,14 @@ public class test extends OpMode {
         }
         if (!this.gamepad1.x) pressX = true;
 
-        if (gamepad1.left_trigger > 0 && (gamepad2.left_trigger > 0 || gamepad2.right_trigger > 0))
+        if (gamepad1.left_trigger > 0 && (gamepad2.left_trigger > 0))
             robot.plane();
         if (gamepad2.y && pressY == true) {
             robot.Grab();
             pressY = false;
         }
-        if(!gamepad2.y)pressY=true;
+        if (!gamepad2.y) pressY = true;
+       // robot.antiHeat();
         // telemetrie
         robot.log(telemetry);
         telemetry.addData("Left Stick Y", leftStickForward);
